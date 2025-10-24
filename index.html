@@ -1,0 +1,737 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Step 4: ML Stress Detection Report (Updated)</title>
+  <style>
+    body {
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f8f9fa;
+      color: #2c3e50;
+      line-height: 1.6;
+    }
+    
+    @media print {
+      body { background-color: white; }
+      .page-break { page-break-before: always; }
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 36px;
+      font-weight: 700;
+    }
+    
+    .toc {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .toc h2 {
+      color: #667eea;
+      margin-top: 0;
+      font-size: 24px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+    
+    .toc ul { list-style: none; padding: 0; }
+    .toc li { padding: 8px 0; border-bottom: 1px solid #eee; }
+    .toc a { color: #2c3e50; text-decoration: none; }
+    .toc a:hover { color: #667eea; }
+    
+    .section {
+      background: white;
+      padding: 30px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    h2 {
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+      margin-top: 0;
+      font-size: 28px;
+    }
+    
+    h3 {
+      color: #764ba2;
+      margin-top: 25px;
+      font-size: 20px;
+    }
+    
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 25px 0;
+    }
+    
+    .metric-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    
+    .metric-value {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    
+    .metric-label {
+      font-size: 14px;
+      opacity: 0.9;
+      text-transform: uppercase;
+    }
+    
+    .chart-container {
+      margin: 30px 0;
+      text-align: center;
+    }
+    
+    .chart-container img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    
+    th {
+      background: #667eea;
+      color: white;
+      padding: 15px;
+      text-align: left;
+    }
+    
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    tr:hover { background-color: #f5f5f5; }
+    
+    .alert {
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid;
+    }
+    
+    .alert-success {
+      background-color: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+    }
+    
+    .alert-warning {
+      background-color: #fff3cd;
+      border-color: #ffc107;
+      color: #856404;
+    }
+    
+    .alert-info {
+      background-color: #d1ecf1;
+      border-color: #17a2b8;
+      color: #0c5460;
+    }
+    
+    /* FIXED DISCLAIMER STYLING - WHITE BACKGROUND, READABLE TEXT */
+    .disclaimer {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #2c3e50;
+      border: 2px solid #e74c3c;
+      box-shadow: 0 2px 8px rgba(231,76,60,0.1);
+    }
+    
+    .disclaimer h3 {
+      color: #e74c3c;
+      margin-top: 25px;
+      margin-bottom: 12px;
+      font-size: 17px;
+      font-weight: bold;
+    }
+    
+    .disclaimer h3:first-child {
+      margin-top: 0;
+    }
+    
+    .disclaimer p {
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+    
+    .disclaimer strong {
+      color: #c0392b;
+      font-weight: 600;
+    }
+    
+    .footer {
+      background: #2c3e50;
+      color: white;
+      padding: 30px;
+      border-radius: 8px;
+      margin-top: 40px;
+      text-align: center;
+    }
+    
+    .company-info {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 Step 4: ML Stress Detection System</h1>
+  <div style="margin-top: 10px; font-size: 18px;">Complete Analysis Report - SPY Market Stress Prediction</div>
+  <div style="margin-top: 5px; font-size: 16px; opacity: 0.9;">Report Generated: 2025-10-24 16:55:59</div>
+</div>
+
+<div class="toc">
+  <h2>📑 Table of Contents</h2>
+  <ul>
+    <li><a href="#section1">1. Executive Summary</a></li>
+    <li><a href="#section1b">2. Understanding Stress vs Normal Conditions</a></li>
+    <li><a href="#section2">3. Model Performance</a></li>
+    <li><a href="#section3">4. Confusion Matrices</a></li>
+    <li><a href="#section4">5. ROC Curve</a></li>
+    <li><a href="#section5">6. Feature Importance & Explanations</a></li>
+    <li><a href="#section6">7. Model Calibration</a></li>
+    <li><a href="#section7">8. Time Series</a></li>
+    <li><a href="#section8">9. Survival Analysis</a></li>
+    <li><a href="#section9">10. Current Assessment</a></li>
+    <li><a href="#disclaimer">Disclaimer</a></li>
+    <li><a href="#company">Company Info</a></li>
+  </ul>
+</div>
+
+<div class="section" id="section1">
+  <h2>1. Executive Summary</h2>
+  
+  <div class="alert alert-success">
+    <strong>✓ Model Training Successful</strong><br>
+    Machine learning model trained and validated on historical SPY market data.
+  </div>
+  
+  <h3>Key Performance Metrics</h3>
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Test AUC</div>
+      <div class="metric-value">0.9848</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Accuracy</div>
+      <div class="metric-value">94.5%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Precision</div>
+      <div class="metric-value">85.3%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Recall</div>
+      <div class="metric-value">88.1%</div>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section" id="section1b">
+  <h2>Understanding Stress vs Normal Market Conditions</h2>
+  
+  <h3>📊 What is Market Stress?</h3>
+  <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 5px; margin: 20px 0;">
+    <p style="margin: 0; line-height: 1.8; color: #856404;">
+    <strong>Market Stress</strong> represents periods of heightened uncertainty, volatility, and negative market sentiment. 
+    These are times when the SPY ETF experiences significant downward pressure, increased volatility, or sustained 
+    negative momentum that could impact portfolio performance.
+    </p>
+  </div>
+  
+  <h3>Stress Period Criteria</h3>
+  <p>A market period is classified as <strong>STRESS</strong> when <strong>2 or more</strong> of the following conditions are met simultaneously:</p>
+  
+  <table>
+    <tr>
+      <th style="width: 30%;">Indicator</th>
+      <th style="width: 30%;">Stress Threshold</th>
+      <th>What It Means</th>
+    </tr>
+    <tr>
+      <td><strong>Drawdown</strong></td>
+      <td>≥ 5% decline from recent peak</td>
+      <td>Market has fallen significantly from recent highs, indicating potential weakness</td>
+    </tr>
+    <tr>
+      <td><strong>Volatility</strong></td>
+      <td>20-day volatility > 2% daily</td>
+      <td>Large daily price swings indicating uncertainty and fear in the market</td>
+    </tr>
+    <tr>
+      <td><strong>Consecutive Losses</strong></td>
+      <td>3+ consecutive down days</td>
+      <td>Sustained selling pressure and negative momentum</td>
+    </tr>
+    <tr>
+      <td><strong>VIX Level</strong></td>
+      <td>VIX > 20</td>
+      <td>Fear index elevated, indicating market participants expect volatility</td>
+    </tr>
+    <tr>
+      <td><strong>Volume Spike</strong></td>
+      <td>Volume > 150% of 20-day average</td>
+      <td>Unusual trading activity often accompanies stress events</td>
+    </tr>
+  </table>
+  
+  <h3>✅ What is Normal Market Condition?</h3>
+  <div style="background: #d4edda; border-left: 4px solid #28a745; padding: 20px; border-radius: 5px; margin: 20px 0;">
+    <p style="margin: 0; line-height: 1.8; color: #155724;">
+    <strong>Normal Market Conditions</strong> represent stable, orderly market behavior where the SPY ETF trades 
+    within expected ranges with moderate volatility. These periods are characterized by regular price movements, 
+    controlled volatility, and absence of panic-driven selling or extreme uncertainty.
+    </p>
+  </div>
+  
+  <h3>Normal Period Characteristics</h3>
+  <ul style="line-height: 1.8;">
+    <li><strong>Stable Drawdowns:</strong> Corrections are shallow (< 5%) and typically recover quickly</li>
+    <li><strong>Low Volatility:</strong> Daily price movements within typical ranges (< 2% volatility)</li>
+    <li><strong>Balanced Momentum:</strong> Mix of up and down days without sustained losing streaks</li>
+    <li><strong>VIX Below 20:</strong> Fear index at normal levels indicating market confidence</li>
+    <li><strong>Normal Volume:</strong> Trading activity within expected ranges</li>
+  </ul>
+  
+  <div class="alert alert-info">
+    <strong>💡 Model Interpretation:</strong> The machine learning model uses these fundamental definitions 
+    as a starting point but analyzes <strong>72 sophisticated features</strong> to detect stress conditions 
+    more accurately than rule-based systems. The model learns complex patterns and interactions between 
+    features that may not be obvious from simple threshold rules.
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section" id="section2">
+  <h2>3. Confusion Matrices</h2>
+  <p>Model performance showing prediction counts and percentages.</p>
+  
+  <div class="chart-container">
+    <h4>Training Set</h4>
+    <img src="plots/confusion_matrix_train_enhanced.png" alt="Training">
+  </div>
+  
+  <div class="chart-container">
+    <h4>Validation Set</h4>
+    <img src="plots/confusion_matrix_val_enhanced.png" alt="Validation">
+  </div>
+  
+  <div class="chart-container">
+    <h4>Test Set (Final Performance)</h4>
+    <img src="plots/confusion_matrix_test_enhanced.png" alt="Test">
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section" id="section5">
+  <h2>5. Feature Importance & Detailed Explanations</h2>
+  
+  <div class="alert alert-info" style="font-size: 15px; padding: 25px;">
+    <strong>📌 Color Legend:</strong><br>
+    <div style="margin-top: 10px;">
+      <span style="display: inline-block; width: 20px; height: 20px; background: #e74c3c; border-radius: 3px; vertical-align: middle;"></span>
+      <strong style="color: #e74c3c; margin-left: 8px;">RED</strong> = Increases stress risk when value is high (warning indicators)<br>
+      <span style="display: inline-block; width: 20px; height: 20px; background: #27ae60; border-radius: 3px; vertical-align: middle; margin-top: 5px;"></span>
+      <strong style="color: #27ae60; margin-left: 8px;">GREEN</strong> = Decreases stress risk (protective factors)
+    </div>
+  </div>
+  
+  <div class="chart-container">
+    <img src="plots/feature_importance_enhanced.png" alt="Feature Importance">
+  </div>
+  
+  <h3>📊 Detailed Feature Explanations</h3>
+  <p style="font-size: 15px; margin-bottom: 20px;">Understanding what drives the model's stress predictions:</p>
+  
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #e74c3c; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        stress_rate_10d
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Rate of stress occurrence over past 10 days - measures recent stress frequency and clustering
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #e74c3c; font-weight: bold; font-size: 14px;">
+          ⚠️ Increases stress risk when value is high
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: 2.9675
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #27ae60; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        days_since_stress
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Number of days since last stress event - longer periods indicate market stability
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #27ae60; font-weight: bold; font-size: 14px;">
+          ✅ Protective factor - decreases stress risk
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: -2.4742
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #e74c3c; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        SPY_DownStreak
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Consecutive down days - extended losing streaks signal deteriorating sentiment
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #e74c3c; font-weight: bold; font-size: 14px;">
+          ⚠️ Increases stress risk when value is high
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: 1.1889
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #27ae60; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        SPY_Drawdown_120d
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Maximum decline from 120-day peak - measures severe long-term weakness
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #27ae60; font-weight: bold; font-size: 14px;">
+          ✅ Protective factor - decreases stress risk
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: -0.6855
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #27ae60; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        SPY_RSI_7
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        7-day Relative Strength Index - oversold conditions (RSI < 30) can precede stress
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #27ae60; font-weight: bold; font-size: 14px;">
+          ✅ Protective factor - decreases stress risk
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: -0.6615
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #e74c3c; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        SPY_TrendSlope_20d
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Slope of 20-day price trend - negative slopes increase stress probability
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #e74c3c; font-weight: bold; font-size: 14px;">
+          ⚠️ Increases stress risk when value is high
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: 0.6526
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #27ae60; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        SPY_Price_to_MA5
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Current price relative to 5-day moving average - short-term trend indicator
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #27ae60; font-weight: bold; font-size: 14px;">
+          ✅ Protective factor - decreases stress risk
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: -0.4925
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #27ae60; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        SPY_Drawdown_Vol_252d
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Annual volatility of drawdowns - consistency and severity of declines
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #27ae60; font-weight: bold; font-size: 14px;">
+          ✅ Protective factor - decreases stress risk
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: -0.3777
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #e74c3c; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        SPY_Vol_5d
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        5-day rolling volatility - captures immediate market turbulence
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #e74c3c; font-weight: bold; font-size: 14px;">
+          ⚠️ Increases stress risk when value is high
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: 0.3071
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #e74c3c; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        stress_lag1
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Whether yesterday was a stress day - captures immediate momentum and persistence
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #e74c3c; font-weight: bold; font-size: 14px;">
+          ⚠️ Increases stress risk when value is high
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: 0.2955
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #e74c3c; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        SPY_Momentum_40d
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        40-day momentum indicator - sustained directional price movement
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #e74c3c; font-weight: bold; font-size: 14px;">
+          ⚠️ Increases stress risk when value is high
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: 0.2621
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #27ae60; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        SPY_Price_to_MA10
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Price relative to 10-day moving average - medium-term trend position
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #27ae60; font-weight: bold; font-size: 14px;">
+          ✅ Protective factor - decreases stress risk
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: -0.2410
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #27ae60; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        stress_lag3
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Stress status 3 days ago - identifies sustained stress patterns
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #27ae60; font-weight: bold; font-size: 14px;">
+          ✅ Protective factor - decreases stress risk
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: -0.2350
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #27ae60; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        SPY_Drawdown_Vol_20d
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Recent drawdown volatility - captures current market instability
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #27ae60; font-weight: bold; font-size: 14px;">
+          ✅ Protective factor - decreases stress risk
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: -0.2237
+        </span>
+      </div>
+    </div>
+  
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 5px solid #27ae60; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="font-weight: bold; color: #2c3e50; font-size: 15px; margin-bottom: 8px;">
+        SPY_PriceToMA200_Vol
+      </div>
+      <div style="color: #555; margin-bottom: 10px; line-height: 1.6;">
+        Advanced technical indicator derived from SPY price and volume data
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+        <span style="color: #27ae60; font-weight: bold; font-size: 14px;">
+          ✅ Protective factor - decreases stress risk
+        </span>
+        <span style="color: #666; font-size: 13px; font-family: monospace;">
+          Coefficient: -0.2139
+        </span>
+      </div>
+    </div>
+  
+  
+  <div class="alert alert-info" style="margin-top: 30px;">
+    <strong>💡 Key Takeaway:</strong> The model primarily responds to recent stress patterns, market drawdowns, and momentum indicators. When multiple risk factors align simultaneously, stress probability increases dramatically.
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section" id="section9">
+  <h2>10. Current Market Assessment</h2>
+  
+  <div class="alert alert-info" style="margin-bottom: 30px;">
+    <strong>📅 Latest Market Analysis:</strong> This assessment is based on the most recent SPY market data 
+    available in the system and uses all 72 model features to calculate stress probability.
+  </div>
+  
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Assessment Date</div>
+      <div class="metric-value" style="font-size: 24px; color: white;">2025-10-23</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Stress Probability</div>
+      <div class="metric-value" style="font-size: 32px; color: white; font-weight: bold;">0.0021%</div>
+      <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">Threshold: 10%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Market Classification</div>
+      <div class="metric-value" style="font-size: 28px; color: white; font-weight: bold; letter-spacing: 2px;">NON-STRESS</div>
+    </div>
+  </div>
+  
+  <div class="alert alert-success"><strong>✓ Normal Market Conditions</strong><br>Current assessment indicates normal conditions. Standard positioning may be maintained.</div>
+  
+  <h3>What This Means</h3>
+  <p style="font-size: 15px; line-height: 1.8;">
+  The model classifies current market conditions as <strong>NORMAL</strong>. Stress indicators are within expected ranges, suggesting stable market conditions. Standard investment strategies and portfolio positioning may be maintained, though ongoing monitoring is always recommended.
+  </p>
+</div>
+
+<div class="page-break"></div>
+
+<div class="section" id="disclaimer">
+  <h2>Disclaimer & Risk Disclosure</h2>
+  
+  <div class="disclaimer">
+    <h3>⚠️ Risk Disclosure</h3>
+    <p>This report is provided for informational and analytical purposes only. The stress detection system is a quantitative tool and should not be used as the sole basis for investment decisions.</p>
+    
+    <h3>📋 No Investment Advice</h3>
+    <p>Nothing in this report constitutes investment advice. The information does not account for your individual circumstances. Seek independent professional advice before making decisions.</p>
+    
+    <h3>⚙️ Model Limitations</h3>
+    <p><strong>Past Performance:</strong> Historical performance is not indicative of future results.</p>
+    <p><strong>Model Risk:</strong> All models have limitations. False positives and negatives may occur.</p>
+    <p><strong>Market Changes:</strong> Model accuracy depends on market conditions remaining similar to training data.</p>
+    
+    <h3>⚖️ Liability Disclaimer</h3>
+    <p><strong>New Way Capital Advisory Limited</strong>, its officers, employees, and affiliates shall not be held liable for any losses, damages, or claims arising from use of this report or model.</p>
+    
+    <h3>📜 Regulatory Compliance</h3>
+    <p>Users are responsible for ensuring compliance with all relevant laws and regulations in their jurisdiction.</p>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="footer" id="company">
+  <h3 style="color: white;">New Way Capital Advisory Limited</h3>
+  
+  <p style="font-size: 16px;"><strong>© 2025 New Way Capital Advisory Limited. All Rights Reserved.</strong></p>
+  
+  <div style="margin: 25px 0; padding: 25px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+    <p style="font-size: 15px;"><strong>Intellectual Property Rights</strong></p>
+    <p>This report and all methodologies are proprietary and confidential. Unauthorized use, reproduction, or distribution is strictly prohibited.</p>
+  </div>
+  
+  <div class="company-info">
+    <p><strong>Contact Information</strong></p>
+    <p>Email: <a href="mailto:tnk@newwaycapital.com" style="color: #fff; text-decoration: underline;">tnk@newwaycapital.com</a></p>
+  </div>
+  
+  <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 12px;">
+    <p>Report Generated: 2025-10-24 16:55:59<br>
+    Model Version: Step 4 v1.0 | R R version 4.5.1 (2025-06-13 ucrt)</p>
+  </div>
+</div>
+
+</body>
+</html>
+
